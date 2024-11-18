@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace frpz.Models
 {
-    // for commit
+    // for commit r
     public class Answer
     {
         public int Id { get; set; }

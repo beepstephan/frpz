@@ -6,7 +6,7 @@
         <!-- StackPanel для полів входу -->
         <StackPanel Name="LoginPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Visibility="Visible">
             <TextBlock Text="Електронна пошта" />
-            <TextBox Name="LoginEmail" Text="beepsmanager@gmail.com"/>
+            <TextBox Name="LoginEmail" Text="igorka2005@gmail.com"/>
 
             <TextBlock Text="Пароль" />
             <PasswordBox Name="LoginPassword" />

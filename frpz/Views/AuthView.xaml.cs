@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using frpz.ViewModels;
 using frpz.Helpers;
+using frpz.Models;
 
 namespace frpz.Views
 {
@@ -33,6 +34,9 @@ namespace frpz.Views
             var user = _viewModel.AuthenticateUser(email, password);
             if (user != null)
             {
+                // Зберігаємо дані користувача у глобальному стані
+                CurrentUser.LoggedInUser = user;
+
                 MessageBox.Show($"Ласкаво просимо, {user.Username} ({user.Role})!");
 
                 if (user.Role == "Адміністратор")
@@ -42,6 +46,10 @@ namespace frpz.Views
                 else if (user.Role == "Менеджер")
                 {
                     OpenManagerView();
+                }
+                else if (user.Role == "Користувач")
+                {
+                    OpenTestSelectionView();
                 }
             }
             else
@@ -62,7 +70,6 @@ namespace frpz.Views
             LoginPanel.Visibility = Visibility.Visible;
         }
 
-
         private void OpenAdminView()
         {
             var adminView = new AdminView();
@@ -74,6 +81,13 @@ namespace frpz.Views
         {
             var managerView = new ManagerView();
             managerView.Show();
+            this.Close();
+        }
+
+        private void OpenTestSelectionView()
+        {
+            var testSelectionView = new TestSelectionView();
+            testSelectionView.Show();
             this.Close();
         }
     }

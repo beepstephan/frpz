@@ -14,6 +14,14 @@ namespace frpz.Views
             InitializeComponent();
         }
 
+        public UserVM UserVM
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         private async void RegisterUser_Click(object sender, RoutedEventArgs e)
         {
             var email = RegisterEmail.Text;

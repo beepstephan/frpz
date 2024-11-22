@@ -15,5 +15,13 @@ namespace frpz.Models
         public Test Test { get; set; }
 
         public ICollection<Answer> Answers { get; set; }
+
+        public ApplicationDbContext ApplicationDbContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

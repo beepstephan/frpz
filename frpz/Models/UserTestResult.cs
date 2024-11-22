@@ -17,6 +17,14 @@ namespace frpz.Models
         public Test Test { get; set; }
 
         public double Score { get; set; } 
-        public DateTime DateTaken { get; set; } 
+        public DateTime DateTaken { get; set; }
+
+        public ApplicationDbContext ApplicationDbContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

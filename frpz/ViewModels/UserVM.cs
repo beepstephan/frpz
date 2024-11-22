@@ -15,6 +15,14 @@ namespace frpz.ViewModels
             dbContext = new ApplicationDbContext();
         }
 
+        public User User
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public async Task CreateUserAsync(User user)
         {
             dbContext.Users.Add(user);

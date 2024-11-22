@@ -15,5 +15,13 @@ namespace frpz.Models
 
         public int QuestionId { get; set; }
         public Question Question { get; set; }
+
+        public ApplicationDbContext ApplicationDbContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

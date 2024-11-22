@@ -9,5 +9,13 @@ namespace frpz.Models
     public static class CurrentUser
     {
         public static User LoggedInUser { get; set; }
+
+        public static Views.TestTakingView TestTakingView
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

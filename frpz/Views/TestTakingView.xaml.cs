@@ -34,6 +34,14 @@ namespace frpz.Views
             _viewModel.SetCurrentQuestion(0); // Починаємо з першого питання
         }
 
+        public TestTakingVM TestTakingVM
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         // Обробка зміни вибору відповіді
         private void AnswerSelectionChanged(object sender, SelectionChangedEventArgs e)
         {

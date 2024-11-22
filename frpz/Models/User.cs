@@ -14,5 +14,13 @@ namespace frpz.Models
 
         public string Role { get; set; }
         public bool isBlocked { get; set; }
+
+        public ApplicationDbContext ApplicationDbContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

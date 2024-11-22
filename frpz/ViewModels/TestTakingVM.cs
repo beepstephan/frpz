@@ -47,11 +47,20 @@ namespace frpz.ViewModels
             UserAnswers = new Dictionary<int, int>();
         }
 
+        // юнит тести
+        public TestTakingVM(User currentUser, List<Test> tests = null)
+        {
+            _dbContext = new ApplicationDbContext();
+            CurrentUser = currentUser;
+            AvailableTests = tests ?? new List<Test>();
+            Questions = new List<Question>();
+            UserAnswers = new Dictionary<int, int>();
+        }
+
         public User CurrentUser { get; private set; }
         public List<Test> AvailableTests { get; private set; }
         public Test SelectedTest { get; set; }
         public List<Question> Questions { get; private set; }
-        // public Question CurrentQuestion { get; private set; }
         public int? SelectedAnswerId { get; set; }
         public Dictionary<int, int> UserAnswers { get; private set; }
         public int CorrectAnswersCount { get; private set; }

@@ -13,5 +13,13 @@ namespace frpz.Models
         public string Description { get; set; }
 
         public ICollection<Question> Questions { get; set; }
+
+        public ApplicationDbContext ApplicationDbContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

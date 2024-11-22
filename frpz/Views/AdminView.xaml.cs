@@ -17,6 +17,14 @@ namespace frpz.Views
             DataContext = _viewModel;
         }
 
+        public AdminVM AdminVM
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         private async void AddTest_Click(object sender, RoutedEventArgs e)
         {
             string title = TestTitleTextBox.Text;

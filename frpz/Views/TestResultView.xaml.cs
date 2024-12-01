@@ -4,9 +4,7 @@ using System.Windows;
 
 namespace frpz.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для TestResultView.xaml
-    /// </summary>
+    
     public partial class TestResultView : Window
     {
         public TestResultView(TestResultVM viewModel)

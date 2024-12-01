@@ -15,12 +15,7 @@ namespace frpz.Models
         public string Role { get; set; }
         public bool isBlocked { get; set; }
 
-        public ApplicationDbContext ApplicationDbContext
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public int FailedAttempts { get; set; } 
+        public DateTime? BlockedUntil { get; set; } 
     }
 }

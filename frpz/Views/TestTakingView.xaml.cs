@@ -32,23 +32,21 @@ namespace frpz.Views
             // Завантажуємо питання для обраного тесту
             _viewModel.LoadTest(_viewModel.SelectedTest.Id);
             _viewModel.SetCurrentQuestion(0); // Починаємо з першого питання
+            _viewModel.StartTest(1);
         }
 
-        public TestTakingVM TestTakingVM
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        
 
         // Обробка зміни вибору відповіді
         private void AnswerSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedAnswer = (Answer)((ListBox)sender).SelectedItem;
-            if (selectedAnswer != null)
+            if (_viewModel.CurrentQuestion != null)
             {
-                _viewModel.SubmitAnswer(_viewModel.CurrentQuestion.Id, selectedAnswer.Id);
+                var selectedAnswer = (Answer)((ListBox)sender).SelectedItem;
+                if (selectedAnswer != null)
+                {
+                    _viewModel.SubmitAnswer(_viewModel.CurrentQuestion.Id, selectedAnswer.Id);
+                }
             }
         }
 
@@ -82,8 +80,16 @@ namespace frpz.Views
         private void FinishTest_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.FinishTest();
-            MessageBox.Show($"Тест завершено! Результат: {_viewModel.CorrectAnswersCount}/{_viewModel.Questions.Count} правильних відповідей.");
+
+            var results = _viewModel.GetTestResults();
+            var resultViewModel = new TestResultVM(results);
+
+            var resultView = new TestResultView(resultViewModel);
+            resultView.Show();
+
             this.Close();
         }
+
+
     }
 }

@@ -1,9 +1,10 @@
 ﻿<Application x:Class="frpz.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:frpz"
+             xmlns:local="clr-namespace:frpz.Converters"
              StartupUri="Views/AuthView.xaml">
     <Application.Resources>
-         
+        <local:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter" />
+        <local:BoolToResultConverter x:Key="BoolToResultConverter" />
     </Application.Resources>
 </Application>

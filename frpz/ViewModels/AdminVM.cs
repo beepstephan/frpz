@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace frpz.ViewModels
 {
@@ -21,8 +19,8 @@ namespace frpz.ViewModels
             CurrentAnswers = new ObservableCollection<Answer>();
         }
 
-        // для юніт тестив
-        public AdminVM(ApplicationDbContext dbContext) 
+        // Для юніт тестів
+        public AdminVM(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
             Tests = new ObservableCollection<Test>();
@@ -46,7 +44,17 @@ namespace frpz.ViewModels
         }
 
         public Question SelectedQuestion { get; set; }
+        private Answer _selectedAnswer;
+        public Answer SelectedAnswer
+        {
+            get => _selectedAnswer;
+            set
+            {
+                _selectedAnswer = value;
+            }
+        }
 
+        // Створення нового тесту
         public async Task CreateTestAsync(string title, string description)
         {
             var newTest = new Test
@@ -60,11 +68,12 @@ namespace frpz.ViewModels
             Tests.Add(newTest);
         }
 
+        // Додавання питання
         public async Task AddQuestionToCurrentTestAsync(string questionText)
         {
             if (SelectedTest == null)
             {
-                throw new System.Exception("Не обрано тест для додавання питання.");
+                throw new Exception("Не обрано тест для додавання питання.");
             }
 
             var newQuestion = new Question
@@ -78,11 +87,12 @@ namespace frpz.ViewModels
             CurrentQuestions.Add(newQuestion);
         }
 
+        // Додавання відповіді
         public async Task AddAnswerToCurrentQuestionAsync(string answerText, bool isCorrect)
         {
             if (SelectedQuestion == null)
             {
-                throw new System.Exception("Не обрано питання для додавання відповіді.");
+                throw new Exception("Не обрано питання для додавання відповіді.");
             }
 
             var newAnswer = new Answer
@@ -97,6 +107,7 @@ namespace frpz.ViewModels
             CurrentAnswers.Add(newAnswer);
         }
 
+        // Завантаження питань
         public void LoadQuestionsForSelectedTest()
         {
             if (SelectedTest != null)
@@ -107,9 +118,14 @@ namespace frpz.ViewModels
                 {
                     CurrentQuestions.Add(question);
                 }
+
+                // Автоматично обираємо перше питання, якщо воно є
+                SelectedQuestion = CurrentQuestions.FirstOrDefault();
+                LoadAnswersForSelectedQuestion(); // Завантажуємо відповіді для обраного питання
             }
         }
 
+        // Завантаження відповідей
         public void LoadAnswersForSelectedQuestion()
         {
             if (SelectedQuestion != null)
@@ -120,6 +136,83 @@ namespace frpz.ViewModels
                 {
                     CurrentAnswers.Add(answer);
                 }
+            }
+        }
+
+        // Видалення тесту
+        public async Task DeleteTestAsync(Test test)
+        {
+            _dbContext.Tests.Remove(test);
+            await _dbContext.SaveChangesAsync();
+            Tests.Remove(test);
+        }
+
+        // Редагування тесту
+        public async Task UpdateTestAsync(Test test, string newTitle, string newDescription)
+        {
+            test.Title = newTitle;
+            test.Description = newDescription;
+            _dbContext.Tests.Update(test);
+            await _dbContext.SaveChangesAsync();
+            LoadTests();
+        }
+
+        // Видалення питання
+        public async Task DeleteQuestionAsync(Question question)
+        {
+            _dbContext.Questions.Remove(question);
+            await _dbContext.SaveChangesAsync();
+            CurrentQuestions.Remove(question);
+        }
+
+        // Додавання зображення до питання
+        public async Task SetImageForCurrentQuestion(byte[] imageData)
+        {
+            if (SelectedQuestion == null)
+            {
+                throw new Exception("Не обрано питання для додавання зображення.");
+            }
+
+            SelectedQuestion.ImageData = imageData;
+            _dbContext.Questions.Update(SelectedQuestion);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        // Редагування питання
+        public async Task UpdateQuestionAsync(Question question, string newText)
+        {
+            question.Text = newText;
+            _dbContext.Questions.Update(question);
+            await _dbContext.SaveChangesAsync();
+            LoadQuestionsForSelectedTest();
+        }
+
+        // Видалення відповіді
+        public async Task DeleteAnswerAsync(Answer answer)
+        {
+            _dbContext.Answers.Remove(answer);
+            await _dbContext.SaveChangesAsync();
+            CurrentAnswers.Remove(answer);
+        }
+
+        // Редагування відповіді
+        public async Task UpdateAnswerAsync(Answer answer, string newText, bool isCorrect)
+        {
+            answer.Text = newText;
+            answer.IsCorrect = isCorrect;
+            _dbContext.Answers.Update(answer);
+            await _dbContext.SaveChangesAsync();
+            LoadAnswersForSelectedQuestion();
+        }
+
+        // Завантаження тестів
+        private void LoadTests()
+        {
+            Tests.Clear();
+            var tests = _dbContext.Tests.ToList();
+            foreach (var test in tests)
+            {
+                Tests.Add(test);
             }
         }
     }

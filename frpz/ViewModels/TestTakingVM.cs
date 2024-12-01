@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Timers = System.Timers;
+using System.Windows;
 
 namespace frpz.ViewModels
 {
@@ -47,6 +48,8 @@ namespace frpz.ViewModels
             UserAnswers = new Dictionary<int, int>();
         }
 
+        public string FormattedTimeRemaining => TimeSpan.FromSeconds(_timeRemaining).ToString(@"mm\:ss");
+
         // юнит тести
         public TestTakingVM(User currentUser, List<Test> tests = null)
         {
@@ -61,7 +64,23 @@ namespace frpz.ViewModels
         public List<Test> AvailableTests { get; private set; }
         public Test SelectedTest { get; set; }
         public List<Question> Questions { get; private set; }
-        public int? SelectedAnswerId { get; set; }
+        private int? _selectedAnswerId;
+        public int? SelectedAnswerId
+        {
+            get => UserAnswers.ContainsKey(CurrentQuestion?.Id ?? 0) ? UserAnswers[CurrentQuestion.Id] : null;
+            set
+            {
+                if (value != _selectedAnswerId && CurrentQuestion != null)
+                {
+                    _selectedAnswerId = value;
+                    if (value.HasValue)
+                    {
+                        SubmitAnswer(CurrentQuestion.Id, value.Value);
+                    }
+                    OnPropertyChanged();
+                }
+            }
+        }
         public Dictionary<int, int> UserAnswers { get; private set; }
         public int CorrectAnswersCount { get; private set; }
 
@@ -117,15 +136,24 @@ namespace frpz.ViewModels
             _testTimer = new Timers.Timer(1000);
             _testTimer.Elapsed += OnTimerTick;
             _testTimer.Start();
+            OnPropertyChanged(nameof(FormattedTimeRemaining)); 
         }
 
         private void OnTimerTick(object sender, Timers.ElapsedEventArgs e)
         {
-            _timeRemaining--;
-            if (_timeRemaining <= 0)
+            if (_timeRemaining > 0)
+            {
+                _timeRemaining--;
+                OnPropertyChanged(nameof(FormattedTimeRemaining));
+            }
+            else
             {
                 _testTimer.Stop();
                 FinishTest();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show($"Час вийшов! Результат: {CorrectAnswersCount}/{Questions.Count} правильних відповідей.");
+                });
             }
         }
 
@@ -145,6 +173,24 @@ namespace frpz.ViewModels
         {
             CalculateTestResult();
             SaveTestResult();
+
+            if (CorrectAnswersCount < Questions.Count / 2) // Якщо результат нижче 50%
+            {
+                CurrentUser.FailedAttempts++;
+                if (CurrentUser.FailedAttempts >= 3)
+                {
+                    CurrentUser.BlockedUntil = DateTime.UtcNow.AddSeconds(60*60*24); // Блокування на день
+                    CurrentUser.FailedAttempts = 0;
+                    MessageBox.Show("Вас було заблоковано на день через 3 невдалі спроби тесту.");
+                }
+
+                // Оновлення користувача в базі
+                using (var context = new ApplicationDbContext())
+                {
+                    context.Users.Update(CurrentUser);
+                    context.SaveChanges();
+                }
+            }
         }
 
         private void CalculateTestResult()
@@ -167,6 +213,30 @@ namespace frpz.ViewModels
 
             _dbContext.UserTestResults.Add(userTestResult);
             _dbContext.SaveChanges();
+        }
+
+        public IEnumerable<QuestionResult> GetTestResults()
+        {
+            var results = new List<QuestionResult>();
+
+            foreach (var question in Questions)
+            {
+                var selectedAnswer = UserAnswers.ContainsKey(question.Id)
+                    ? question.Answers.FirstOrDefault(a => a.Id == UserAnswers[question.Id])
+                    : null;
+
+                var correctAnswer = question.Answers.FirstOrDefault(a => a.IsCorrect);
+
+                results.Add(new QuestionResult
+                {
+                    QuestionText = question.Text,
+                    SelectedAnswerText = selectedAnswer?.Text ?? "Не відповів",
+                    CorrectAnswerText = correctAnswer?.Text ?? "Немає правильної відповіді",
+                    IsCorrect = selectedAnswer != null && selectedAnswer.IsCorrect
+                });
+            }
+
+            return results;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using frpz.Helpers;
 using frpz.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,13 +16,18 @@ namespace frpz.ViewModels
             dbContext = new ApplicationDbContext();
         }
 
-        public User User
+        public User FindUserByEmail(string email)
         {
-            get => default;
-            set
-            {
-            }
+            return dbContext.Users.FirstOrDefault(u => u.Email == email);
         }
+
+        // Оновлення даних користувача
+        public void UpdateUser(User user)
+        {
+            dbContext.Users.Update(user);
+            dbContext.SaveChanges();
+        }
+
 
         public async Task CreateUserAsync(User user)
         {
@@ -31,15 +37,19 @@ namespace frpz.ViewModels
 
         public async Task RegisterUserAsync(string username, string email, string password, string role = "Користувач")
         {
-            var user = new User
+            var newUser = new User
             {
                 Username = username,
                 Email = email,
                 PasswordHash = PasswordHelper.passwordHasher(password),
-                Role = role,
-                isBlocked = false
+                Role = "Користувач",
+                isBlocked = false,
+                FailedAttempts = 0,
+                BlockedUntil = null
             };
-            await CreateUserAsync(user);
+
+            dbContext.Users.Add(newUser);
+            await dbContext.SaveChangesAsync();
         }
 
         public User AuthenticateUser(string email, string password)

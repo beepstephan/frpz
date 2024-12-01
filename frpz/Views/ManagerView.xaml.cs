@@ -14,14 +14,6 @@ namespace frpz.Views
             DataContext = _viewModel;
         }
 
-        public ManagerVM ManagerVM
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
         private void ViewTestHistory_Click(object sender, RoutedEventArgs e)
         {
             if (_viewModel.SelectedUser != null)

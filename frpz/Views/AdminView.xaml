@@ -1,9 +1,9 @@
 ﻿<Window x:Class="frpz.Views.AdminView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Адміністратор" Height="700" Width="800">
+        Title="Адміністратор" Height="800" Width="1000">
     <Grid Margin="10">
-        <!-- Панель для додавання тесту -->
+        <!-- Панель для тестів -->
         <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="300">
             <TextBlock Text="Назва тесту" Margin="0,10,0,0"/>
             <TextBox Name="TestTitleTextBox" Width="250"/>
@@ -12,31 +12,50 @@
             <TextBox Name="TestDescriptionTextBox" Width="250"/>
 
             <Button Content="Додати тест" Width="150" Margin="0,10,0,10" Click="AddTest_Click"/>
+            <Button Content="Редагувати тест" Width="150" Margin="0,10,0,10" Click="EditTest_Click" />
+            <Button Content="Видалити тест" Width="150" Margin="0,10,0,10" Click="DeleteTest_Click" />
 
-            <!-- Додаємо ListBox для вибору тесту -->
+
             <TextBlock Text="Список тестів" FontWeight="Bold" Margin="10"/>
             <ListBox Name="TestsListBox" Width="250" Height="150"
                      ItemsSource="{Binding Tests}" DisplayMemberPath="Title"
                      SelectedItem="{Binding SelectedTest, Mode=TwoWay}"/>
+        </StackPanel>
 
-            <!-- Інші елементи для додавання питань -->
+        <!-- Панель для питань -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="300">
             <TextBlock Text="Питання" FontWeight="Bold" Margin="10"/>
-            <ListBox Name="QuestionsListBox" Width="250" Height="150" 
+            <ListBox Name="QuestionsListBox" Width="250" Height="150"
                      ItemsSource="{Binding CurrentQuestions}" DisplayMemberPath="Text"
+                     SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
                      SelectionChanged="QuestionsListBox_SelectionChanged"/>
+
             <TextBlock Text="Текст питання" Margin="0,10,0,0"/>
             <TextBox Name="QuestionTextBox" Width="250"/>
             <Button Content="Додати питання" Width="150" Margin="0,10,0,10" Click="AddQuestion_Click"/>
+            <Button Content="Редагувати питання" Width="150" Margin="0,10,0,10" Click="EditQuestion_Click" />
+            <Button Content="Видалити питання" Width="150" Margin="0,10,0,10" Click="DeleteQuestion_Click" />
+
+
+            <!-- Робота із зображеннями -->
+            <TextBlock Text="Зображення для питання" FontWeight="Bold" Margin="10"/>
+            <Image Name="QuestionImage" Width="200" Height="200" Stretch="Uniform"
+                    Source="{Binding SelectedQuestion.ImageData, Converter={StaticResource ByteArrayToImageConverter}}" />
+            <Button Content="Завантажити зображення" Click="SelectImage_Click" Margin="0,10,0,0"/>
         </StackPanel>
 
-        <!-- Панель для додавання відповідей -->
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="400">
+        <!-- Панель для відповідей -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="300">
             <TextBlock Text="Варіанти відповідей" FontWeight="Bold" Margin="10"/>
-            <ListBox Name="AnswersListBox" Width="350" Height="150" 
-                     ItemsSource="{Binding CurrentAnswers}" DisplayMemberPath="Text"/>
-            <TextBox Name="AnswerTextBox" Width="250" Margin="0,10,0,0" Text="Введіть відповідь"/>
-            <CheckBox Name="IsCorrectAnswerCheckBox" Content="Правильна відповідь" Margin="0,10,0,0"/>
+            <ListBox Name="AnswersListBox" Width="250" Height="150"
+                     ItemsSource="{Binding CurrentAnswers}" DisplayMemberPath="Text"
+                     SelectedItem="{Binding SelectedAnswer, Mode=TwoWay}"/>
+            <TextBox Name="AnswerTextBox" Width="250" Margin="0,10,0,0" Text="{Binding SelectedAnswer.Text, Mode=TwoWay}" />
+
+            <CheckBox Name="IsCorrectAnswerCheckBox" Content="Правильна відповідь" Margin="0,10,0,0" IsChecked="{Binding SelectedAnswer.IsCorrect, Mode=TwoWay}" />
             <Button Content="Додати відповідь" Width="150" Margin="0,10,0,10" Click="AddAnswer_Click"/>
+            <Button Content="Редагувати відповідь" Width="150" Margin="0,10,0,10" Click="EditAnswer_Click" />
+            <Button Content="Видалити відповідь" Width="150" Margin="0,10,0,10" Click="DeleteAnswer_Click" />
         </StackPanel>
     </Grid>
 </Window>

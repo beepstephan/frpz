@@ -11,6 +11,8 @@ namespace frpz.Models
         public int Id { get; set; }
         public string Text { get; set; }
 
+        public byte[] ImageData { get; set; } 
+
         public int TestId { get; set; }
         public Test Test { get; set; }
 

@@ -28,9 +28,27 @@ namespace frpz.Views
             var password = RegisterPassword.Password;
             var username = RegisterUsername.Text;
 
+            // Перевіряємо, чи користувач із такою електронною адресою вже існує
+            var existingUser = _viewModel.FindUserByEmail(email);
+            if (existingUser != null)
+            {
+                if (existingUser.BlockedUntil.HasValue && existingUser.BlockedUntil > DateTime.UtcNow)
+                {
+                    MessageBox.Show($"Ця електронна адреса заблокована до {existingUser.BlockedUntil.Value.ToLocalTime()}.");
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("Користувач із такою електронною адресою вже існує.");
+                    return;
+                }
+            }
+
+            // Реєстрація нового користувача
             await _viewModel.RegisterUserAsync(username, email, password);
             MessageBox.Show("Реєстрація успішна! Будь ласка, увійдіть.");
 
+            // Перемикаємося на вікно входу
             SwitchToLogin(null, null);
         }
 
@@ -40,10 +58,19 @@ namespace frpz.Views
             var password = LoginPassword.Password;
 
             var user = _viewModel.AuthenticateUser(email, password);
+
             if (user != null)
             {
-                // Зберігаємо дані користувача у глобальному стані
                 CurrentUser.LoggedInUser = user;
+                if (user.BlockedUntil.HasValue && user.BlockedUntil > DateTime.UtcNow)
+                {
+                    MessageBox.Show($"Ваш акаунт заблоковано до {user.BlockedUntil.Value.ToLocalTime()}.");
+                    return;
+                }
+
+                // Успішна авторизація
+                // user.FailedAttempts = 0;
+                _viewModel.UpdateUser(user);
 
                 MessageBox.Show($"Ласкаво просимо, {user.Username} ({user.Role})!");
 
